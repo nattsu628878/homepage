@@ -6,6 +6,10 @@ on:
       - 'docs/notes/**.md'
       - 'scripts/build-notes-manifest.mjs'
       - '.github/workflows/notes-manifest.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -25,4 +29,6 @@ jobs:
         with:
           commit_message: 'chore: update notes manifest'
           file_pattern: docs/notes/index.json
+          # 明示的にデフォルトトークンを指定
+          token: ${{ secrets.GITHUB_TOKEN }}
 
