@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Links - Nattsu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css?v=20251030">
+  </head>
+  <body>
+    <main class="section">
+      <div class="container">
+        <h1 class="brand" style="margin-bottom:12px;">Links</h1>
+        <p style="margin:0 0 16px;"><a class="cta" href="./index.html">← ホームへ</a></p>
+        <ul class="cards" id="links-list"></ul>
+      </div>
+    </main>
+    <script>
+      async function loadLinks() {
+        const listEl = document.getElementById('links-list');
+        const res = await fetch('./links.json?v=20251030');
+        const links = await res.json();
+        for (const link of links) {
+          const li = document.createElement('li');
+          li.className = 'card';
+          li.innerHTML = `
+            <h4><a href="${link.url}" target="_blank" rel="noreferrer">${link.title}</a></h4>
+            <p style="color: var(--muted);">${link.desc || ''}</p>
+          `;
+          listEl.appendChild(li);
+        }
+      }
+      loadLinks();
+    </script>
+  </body>
+  </html>
+
