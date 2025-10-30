@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./styles.css?v=20251030">
   </head>
   <body>
     <main class="hero">
@@ -18,6 +18,77 @@
         <p><a class="cta" href="https://docs.github.com/ja/pages" target="_blank" rel="noreferrer">GitHub Pages の手順</a></p>
       </div>
     </main>
+
+    <section class="section" id="notes">
+      <div class="container">
+        <h3>Notes</h3>
+        <ul class="cards" id="notes-list"></ul>
+      </div>
+    </section>
+    <script>
+      async function fetchText(path) {
+        const res = await fetch(path);
+        if (!res.ok) throw new Error('Failed to fetch ' + path);
+        return await res.text();
+      }
+
+      function markdownToHtml(md) {
+        const lines = md.split(/\r?\n/);
+        let html = '';
+        let inCode = false;
+        for (const line of lines) {
+          if (line.startsWith('```')) {
+            html += inCode ? '</code></pre>' : '<pre class="card"><code>';
+            inCode = !inCode;
+            continue;
+          }
+          if (inCode) {
+            html += line.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '\n';
+            continue;
+          }
+          if (line.startsWith('# ')) {
+            html += '<h4>' + line.slice(2) + '</h4>';
+          } else if (line.startsWith('## ')) {
+            html += '<h5>' + line.slice(3) + '</h5>';
+          } else if (line.trim().length === 0) {
+            // skip
+          } else if (line.startsWith('- ')) {
+            html += '<p>' + line.replace(/^\-\s*/, '• ') + '</p>';
+          } else {
+            html += '<p>' + line + '</p>';
+          }
+        }
+        return html;
+      }
+
+      async function loadNotes() {
+        try {
+          const listEl = document.getElementById('notes-list');
+          const manifestRes = await fetch('./notes/index.json?v=20251030');
+          if (!manifestRes.ok) throw new Error('notes manifest not found');
+          const manifest = await manifestRes.json();
+
+          for (const item of manifest) {
+            try {
+              const md = await fetchText('./notes/' + item.file);
+              const li = document.createElement('li');
+              li.className = 'card';
+              li.innerHTML = `
+                <h4>${item.title}</h4>
+                <p style="color: var(--muted); font-size: 12px; margin-top: -4px;">${item.date}${item.tags ? ' ・ ' + item.tags.join(', ') : ''}</p>
+                <div>${markdownToHtml(md)}</div>
+              `;
+              listEl.appendChild(li);
+            } catch (e) {
+              console.error(e);
+            }
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      loadNotes();
+    </script>
   </body>
   </html>
 
