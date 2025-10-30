@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My GitHub Pages</title>
+    <meta name="description" content="GitHub Pages で公開するシンプルなホームページ">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <h1 class="brand">My Homepage</h1>
+        <nav class="nav">
+          <a href="#about">About</a>
+          <a href="#works">Works</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container">
+          <h2>こんにちは 👋</h2>
+          <p>これは GitHub Pages で公開するサンプルのホームページです。好きな内容に編集してください。</p>
+          <a class="cta" href="https://docs.github.com/ja/pages" target="_blank" rel="noreferrer">GitHub Pages のドキュメント</a>
+        </div>
+      </section>
+
+      <section id="about" class="section">
+        <div class="container">
+          <h3>About</h3>
+          <p>自己紹介やミッション、スキルセットなどをここに記載します。</p>
+        </div>
+      </section>
+
+      <section id="works" class="section">
+        <div class="container">
+          <h3>Works</h3>
+          <ul class="cards">
+            <li class="card">
+              <h4>プロジェクト A</h4>
+              <p>簡単な説明文。リポジトリやデモへのリンクを追加できます。</p>
+            </li>
+            <li class="card">
+              <h4>プロジェクト B</h4>
+              <p>簡単な説明文。スクリーンショットも良いです。</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="contact" class="section">
+        <div class="container">
+          <h3>Contact</h3>
+          <p>お問い合わせは <a href="mailto:you@example.com">you@example.com</a> まで。</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <small>© <span id="year"></span> Your Name</small>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+  </body>
+  </html>
+
+
