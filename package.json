@@ -1,9 +1,0 @@
-{
-  "name": "homepage",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "build:notes": "node scripts/build-notes-manifest.mjs"
-  }
-}
-
