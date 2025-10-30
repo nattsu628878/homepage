@@ -1,44 +1,32 @@
-<!doctype html>
-<html lang="ja">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Nattsu</title>
-    <meta name="description" content="GitHub Pages で公開するシンプルなホームページ">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css?v=20251030">
-  </head>
-  <body>
-    <main class="hero">
-      <div class="container">
-        <h1 class="brand">Nattsu / なっつ</h1>
-        <p>Nattsuです。</p>
-        <p>
-          <a class="cta" href="./notes.html" style="margin-right:8px;">Notes</a>
-          <a class="cta" href="./links.html">Links</a>
-        </p>
-      </div>
-    </main>
+---
+layout: default
+title: Nattsu
+---
+<section class="hero">
+  <div class="container">
+    <h1 class="brand">Nattsu / なっつ</h1>
+    <p>Nattsuです。</p>
+    <p>
+      <a class="cta" href="{{ "/notes.html" | relative_url }}" style="margin-right:8px;">Notes</a>
+      <a class="cta" href="{{ "/links.html" | relative_url }}">Links</a>
+    </p>
+  </div>
+</section>
 
-    <section class="section" id="notes">
-      <div class="container">
-        <h3>Notes</h3>
-        <ul class="cards">
-          {% assign sorted = site.notes | sort: 'date' | reverse %}
-          {% for note in sorted limit:3 %}
-            <li class="card">
-              <h4><a href="{{ note.url | relative_url }}">{{ note.title }}</a></h4>
-              {% if note.date %}<p class="subtitle">{{ note.date | date: "%Y-%m-%d" }}{% if note.tags %} ・ {{ note.tags | join: ", " }}{% endif %}</p>{% endif %}
-              <div>{{ note.excerpt }}</div>
-            </li>
-          {% endfor %}
-        </ul>
-        <p style="margin-top:12px;"><a class="cta" href="{{ "/notes.html" | relative_url }}">→ もっと見る</a></p>
-      </div>
-    </section>
-  </body>
-  </html>
+<section class="section" id="notes">
+  <div class="container">
+    <h3>Notes</h3>
+    <ul class="cards">
+      {% assign sorted = site.notes | sort: 'date' | reverse %}
+      {% for note in sorted limit:3 %}
+        <li class="card">
+          <h4><a href="{{ note.url | relative_url }}">{{ note.title }}</a></h4>
+          {% if note.date %}<p class="subtitle">{{ note.date | date: "%Y-%m-%d" }}{% if note.tags %} ・ {{ note.tags | join: ", " }}{% endif %}</p>{% endif %}
+          <div>{{ note.excerpt }}</div>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
 
 
