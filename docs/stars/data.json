@@ -14,35 +14,47 @@
     "url": "./links.html",
     "position": [-15, 15, 5],
     "color": "0x00ffff",
-    "type": "page",
+    "type": "planet",
     "description": "外部リンク一覧"
   },
   {
     "id": "github",
     "name": "GitHub",
     "url": "./github.html",
-    "position": [10, -20, 15],
+    "position": [0, 0, 0],
     "color": "0xffffff",
-    "type": "page",
-    "description": "つくったもの"
+    "type": "satellite",
+    "description": "つくったもの",
+    "parentId": "links",
+    "orbitRadius": 12,
+    "orbitSpeed": 0.5,
+    "orbitAngle": 0
   },
   {
     "id": "youtube",
     "name": "YouTube",
     "url": "./youtube.html",
-    "position": [-20, -10, -15],
+    "position": [0, 0, 0],
     "color": "0xff0000",
-    "type": "page",
-    "description": "曲とか"
+    "type": "satellite",
+    "description": "曲とか",
+    "parentId": "links",
+    "orbitRadius": 12,
+    "orbitSpeed": 0.5,
+    "orbitAngle": 2.094
   },
   {
     "id": "twitter",
     "name": "X(Twitter)",
     "url": "./twitter.html",
-    "position": [0, 25, 0],
+    "position": [0, 0, 0],
     "color": "0x1da1f2",
-    "type": "page",
-    "description": "雑多なこと"
+    "type": "satellite",
+    "description": "雑多なこと",
+    "parentId": "links",
+    "orbitRadius": 12,
+    "orbitSpeed": 0.5,
+    "orbitAngle": 4.189
   },
   {
     "id": "test1",

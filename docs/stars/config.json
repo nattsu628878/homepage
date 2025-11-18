@@ -6,6 +6,18 @@
       "glowOpacity": 0.3,
       "emissiveIntensity": 0.5
     },
+    "planet": {
+      "size": 2.0,
+      "glowSize": 2.5,
+      "glowOpacity": 0.4,
+      "emissiveIntensity": 0.6
+    },
+    "satellite": {
+      "size": 1.0,
+      "glowSize": 1.5,
+      "glowOpacity": 0.3,
+      "emissiveIntensity": 0.5
+    },
     "external": {
       "size": 1.5,
       "glowSize": 2.0,
@@ -40,6 +52,15 @@
     "dampingFactor": 0.05,
     "minDistance": 20,
     "maxDistance": 200
+  },
+  "rings": {
+    "count": 3,
+    "baseRadius": 8,
+    "width": 0.1,
+    "segments": 64,
+    "opacity": 0.5,
+    "rotationSpeed": 0.2,
+    "radiusDecrease": 1.5
   }
 }
 
