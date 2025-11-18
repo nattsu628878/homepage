@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Links - Nattsu</title>
+  <title>GitHub - Nattsu</title>
   <style>
     * {
       margin: 0;
@@ -68,43 +68,22 @@
     .content h1 {
       font-size: 32px;
       margin-bottom: 30px;
+      color: #ffffff;
     }
     
-    .links-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-    
-    .link-item {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 20px;
-      border-radius: 12px;
-      transition: all 0.3s;
-    }
-    
-    .link-item:hover {
-      background: rgba(255, 255, 255, 0.1);
-      transform: translateY(-2px);
-    }
-    
-    .link-item a {
-      color: #00ffff;
-      text-decoration: none;
+    .content p {
       font-size: 18px;
-      font-weight: 600;
+      margin-bottom: 20px;
+      color: rgba(255, 255, 255, 0.9);
     }
     
-    .link-item a:hover {
+    .content a {
+      color: #ffffff;
       text-decoration: underline;
     }
     
-    .link-item p {
-      margin-top: 8px;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 14px;
+    .content a:hover {
+      opacity: 0.8;
     }
   </style>
 </head>
@@ -112,8 +91,9 @@
   <div id="canvas-container">
     <a href="./index.html" class="back-button">← 宇宙に戻る</a>
     <div class="content">
-      <h1>Links</h1>
-      <ul class="links-list" id="links-list"></ul>
+      <h1>GitHub</h1>
+      <p>つくったもの</p>
+      <p><a href="https://github.com/nattsu628878" target="_blank" rel="noreferrer">GitHub プロフィールを開く</a></p>
     </div>
   </div>
   
@@ -165,25 +145,6 @@
     }
     scene.add(backgroundStars);
     
-    // リンクデータの読み込み
-    async function loadLinks() {
-      const listEl = document.getElementById('links-list');
-      const res = await fetch('./links.json');
-      const links = await res.json();
-      
-      links.forEach(link => {
-        const li = document.createElement('li');
-        li.className = 'link-item';
-        li.innerHTML = `
-          <a href="${link.url}" target="_blank" rel="noreferrer">${link.title}</a>
-          <p>${link.desc || ''}</p>
-        `;
-        listEl.appendChild(li);
-      });
-    }
-    
-    loadLinks();
-    
     // アニメーションループ
     function animate() {
       requestAnimationFrame(animate);
@@ -213,3 +174,4 @@
   </script>
 </body>
 </html>
+

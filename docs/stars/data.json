@@ -1,0 +1,57 @@
+[
+  {
+    "id": "notes",
+    "name": "Notes",
+    "url": "./notes.html",
+    "position": [20, 10, -10],
+    "color": "0xffd700",
+    "type": "page",
+    "description": "ノート一覧"
+  },
+  {
+    "id": "links",
+    "name": "Links",
+    "url": "./links.html",
+    "position": [-15, 15, 5],
+    "color": "0x00ffff",
+    "type": "page",
+    "description": "外部リンク一覧"
+  },
+  {
+    "id": "github",
+    "name": "GitHub",
+    "url": "./github.html",
+    "position": [10, -20, 15],
+    "color": "0xffffff",
+    "type": "page",
+    "description": "つくったもの"
+  },
+  {
+    "id": "youtube",
+    "name": "YouTube",
+    "url": "./youtube.html",
+    "position": [-20, -10, -15],
+    "color": "0xff0000",
+    "type": "page",
+    "description": "曲とか"
+  },
+  {
+    "id": "twitter",
+    "name": "X(Twitter)",
+    "url": "./twitter.html",
+    "position": [0, 25, 0],
+    "color": "0x1da1f2",
+    "type": "page",
+    "description": "雑多なこと"
+  },
+  {
+    "id": "test1",
+    "name": "テスト１",
+    "url": "./test1.html",
+    "position": [15, -15, 20],
+    "color": "0x00ff00",
+    "type": "page",
+    "description": "テスト用の星"
+  }
+]
+

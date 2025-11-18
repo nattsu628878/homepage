@@ -16,6 +16,7 @@
       background: #000;
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       color: #fff;
+      transition: background-color 0.5s ease;
     }
     
     #canvas-container {
@@ -195,6 +196,16 @@
     
     window.addEventListener('resize', onWindowResize);
     animate();
+    
+    // URLパラメータから背景色を取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const bgColor = urlParams.get('bg');
+    if (bgColor) {
+      // 背景色を適用
+      document.body.style.background = `#${bgColor}`;
+      // シーンの背景色も変更
+      scene.background = new THREE.Color(`#${bgColor}`);
+    }
   </script>
 </body>
 </html>

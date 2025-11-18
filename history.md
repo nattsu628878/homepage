@@ -50,6 +50,145 @@
 - パフォーマンスを重視し、星の数は適切に制限
 - アクセシビリティも考慮（キーボード操作、スクリーンリーダー対応など）
 
+## フォルダ構造
+
+```
+docs/
+  stars/
+    data.json      # 星のデータ（名前、URL、位置、色など）
+    config.json    # 星の設定（タイプ、アニメーション、カメラなど）
+  index.html       # メインページ（宇宙空間）
+  notes.html       # ノート一覧ページ
+  links.html       # リンク一覧ページ
+  github.html      # GitHubページ
+  youtube.html     # YouTubeページ
+  twitter.html     # X(Twitter)ページ
+  test1.html       # テストページ（例）
+  ...
+```
+
+## 星の追加方法
+
+### 1. 星のデータを追加
+
+`docs/stars/data.json`に新しい星のエントリを追加します。
+
+```json
+{
+  "id": "unique-id",
+  "name": "星の名前",
+  "url": "./target-page.html",
+  "position": [x, y, z],
+  "color": "0xrrggbb",
+  "type": "page",
+  "description": "説明文"
+}
+```
+
+#### 各フィールドの説明
+
+- **id**: 星の一意ID（必須、重複不可）
+- **name**: 星に表示される名前（必須）
+- **url**: クリック時の遷移先URL（必須）
+  - 内部ページ: `"./page.html"` 形式
+  - 外部リンク: `"https://example.com"` 形式
+- **position**: 3D空間での位置 `[x, y, z]`（必須）
+  - 例: `[20, 10, -10]` は x=20, y=10, z=-10 の位置
+  - 他の星と重ならない位置を指定することを推奨
+- **color**: 星の色（必須）
+  - 16進数形式: `"0xffd700"`（金色）、`"0x00ffff"`（シアン）など
+  - 色の参考: https://www.color-hex.com/
+- **type**: 星のタイプ（必須）
+  - `"page"`: 内部ページ
+  - `"external"`: 外部リンク
+  - `"note"`: ノート
+- **description**: 説明文（オプション、ホバー時に表示される）
+
+#### 追加例
+
+```json
+{
+  "id": "my-project",
+  "name": "マイプロジェクト",
+  "url": "./my-project.html",
+  "position": [25, -10, 15],
+  "color": "0xff6b9d",
+  "type": "page",
+  "description": "私のプロジェクト紹介"
+}
+```
+
+### 2. 遷移先ページを作成（内部ページの場合）
+
+星をクリックした際の遷移先ページを作成します。`docs/`ディレクトリにHTMLファイルを配置します。
+
+#### ページの基本構造
+
+- Three.jsを使用した背景の星
+- URLパラメータ `?bg=rrggbb` から背景色を取得して適用
+- 「宇宙に戻る」ボタン（`./index.html`へのリンク）
+
+既存のページ（`github.html`、`youtube.html`など）を参考にしてください。
+
+### 3. 設定のカスタマイズ（オプション）
+
+`docs/stars/config.json`で星システムの動作をカスタマイズできます。
+
+#### 星タイプごとの設定
+
+```json
+"starTypes": {
+  "page": {
+    "size": 1.5,              // 星のサイズ
+    "glowSize": 2.0,          // グロー効果のサイズ
+    "glowOpacity": 0.3,       // グロー効果の透明度
+    "emissiveIntensity": 0.5  // 発光の強さ
+  }
+}
+```
+
+#### アニメーション設定
+
+```json
+"animation": {
+  "duration": 2000,           // カメラ移動の時間（ミリ秒）
+  "cameraDistance": 5,        // 星への接近距離
+  "scaleMultiplier": 2.0      // クリック時の拡大倍率
+}
+```
+
+#### 背景の星の設定
+
+```json
+"background": {
+  "starCount": 200,           // 背景の星の数
+  "starSize": 0.1,            // 背景の星のサイズ
+  "starOpacity": 0.5          // 背景の星の透明度
+}
+```
+
+#### カメラ設定
+
+```json
+"camera": {
+  "fov": 75,                  // 視野角
+  "near": 0.1,                // 近接クリッピング面
+  "far": 1000,                // 遠方クリッピング面
+  "initialZ": 50              // 初期Z位置
+}
+```
+
+#### コントロール設定
+
+```json
+"controls": {
+  "enableDamping": true,      // ダンピング（慣性）を有効化
+  "dampingFactor": 0.05,      // ダンピング係数
+  "minDistance": 20,          // 最小ズーム距離
+  "maxDistance": 200          // 最大ズーム距離
+}
+```
+
 ## 更新履歴
 
 ### 2024-XX-XX: Phase 1 完了
@@ -62,14 +201,23 @@
 - ラベル表示機能の実装
 - links.htmlとnotes.htmlの刷新（背景に星を表示）
 
+### 2024-XX-XX: データ構造の整理
+- 星のデータを`stars/data.json`に分離
+- 設定を`stars/config.json`に分離
+- モジュール化により拡張性と再利用性を向上
+- 星の追加方法をドキュメント化
+
 ### 実装詳細
-- **index.html**: メインの宇宙空間。5つの星（Notes, Links, GitHub, YouTube, X）を配置
+- **index.html**: メインの宇宙空間。JSONファイルから星のデータを読み込んで表示
 - **星の機能**:
   - 3D空間内を自由に漂うアニメーション
   - マウスホバーでラベル表示
-  - クリックでページ遷移（内部ページは通常遷移、外部リンクは新規タブ）
+  - クリックでカメラアニメーション後にページ遷移
   - 星のサイズが脈動するアニメーション
   - グロー効果
-- **背景**: 200個の小さな星で装飾
+  - 星の色が遷移先ページの背景色として適用される
+- **背景**: 設定可能な数の小さな星で装飾
 - **コントロール**: OrbitControlsでマウス操作可能（回転・ズーム）
+  - 左クリック: 星の選択
+  - 右クリック/中クリック: カメラの回転・ズーム
 

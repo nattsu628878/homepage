@@ -1,0 +1,45 @@
+{
+  "starTypes": {
+    "page": {
+      "size": 1.5,
+      "glowSize": 2.0,
+      "glowOpacity": 0.3,
+      "emissiveIntensity": 0.5
+    },
+    "external": {
+      "size": 1.5,
+      "glowSize": 2.0,
+      "glowOpacity": 0.3,
+      "emissiveIntensity": 0.5
+    },
+    "note": {
+      "size": 1.2,
+      "glowSize": 1.8,
+      "glowOpacity": 0.3,
+      "emissiveIntensity": 0.5
+    }
+  },
+  "animation": {
+    "duration": 2000,
+    "cameraDistance": 5,
+    "scaleMultiplier": 2.0
+  },
+  "background": {
+    "starCount": 200,
+    "starSize": 0.1,
+    "starOpacity": 0.5
+  },
+  "camera": {
+    "fov": 75,
+    "near": 0.1,
+    "far": 1000,
+    "initialZ": 50
+  },
+  "controls": {
+    "enableDamping": true,
+    "dampingFactor": 0.05,
+    "minDistance": 20,
+    "maxDistance": 200
+  }
+}
+
