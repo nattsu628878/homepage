@@ -110,6 +110,8 @@
     const planets = []; // 惑星（親星）
     const satellites = []; // 衛星（子星）
     const ringsGroup = new THREE.Group(); // リング用のグループ
+    const shootingStars = []; // 流れ星の配列
+    let lastShootingStarTime = 0; // 最後に流れ星を生成した時刻
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     
@@ -288,6 +290,52 @@
       });
     }
     
+    // 太陽を作成（ワールド座標の中心に配置）
+    function createSun() {
+      const sunColor = 0xffd700; // 金色
+      const sunSize = 4.0; // 大きめのサイズ
+      const sunGlowSize = 6.0; // 大きなグロー効果
+      
+      // 太陽の形状（球体）
+      const geometry = new THREE.SphereGeometry(sunSize, 32, 32);
+      const material = new THREE.MeshBasicMaterial({ 
+        color: sunColor,
+        emissive: sunColor,
+        emissiveIntensity: 1.0 // 強い発光
+      });
+      const sun = new THREE.Mesh(geometry, material);
+      
+      // ワールド座標の中心に配置
+      sun.position.set(0, 0, 0);
+      
+      // データを保存
+      sun.userData = {
+        id: 'sun',
+        name: 'About',
+        url: './sun.html',
+        type: 'sun',
+        description: '自己紹介',
+        isSun: true
+      };
+      
+      // 光る効果（グロー）- 複数層でより明るく
+      for (let i = 0; i < 3; i++) {
+        const glowGeometry = new THREE.SphereGeometry(sunGlowSize - i * 0.5, 32, 32);
+        const glowMaterial = new THREE.MeshBasicMaterial({
+          color: sunColor,
+          transparent: true,
+          opacity: 0.3 - i * 0.1
+        });
+        const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+        sun.add(glow);
+      }
+      
+      // シーンに直接追加（starsGroupの回転の影響を受けない）
+      scene.add(sun);
+      
+      return sun;
+    }
+    
     // リングを作成
     function createRings(planet) {
       const ringConfig = starConfig?.rings || {
@@ -359,6 +407,134 @@
       }
     }
     
+    // 流れ星を作成
+    function createShootingStar() {
+      // 画面の端からランダムな位置を開始点とする
+      const side = Math.floor(Math.random() * 4); // 0: 上, 1: 右, 2: 下, 3: 左
+      let startX, startY, endX, endY;
+      
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      
+      // カメラの視野角を考慮して3D座標に変換
+      const fov = camera.fov * (Math.PI / 180);
+      const distance = 50; // カメラからの距離
+      const aspect = width / height;
+      
+      switch (side) {
+        case 0: // 上から
+          startX = (Math.random() - 0.5) * width / distance;
+          startY = Math.tan(fov / 2) * distance;
+          endX = (Math.random() - 0.5) * width / distance;
+          endY = -Math.tan(fov / 2) * distance;
+          break;
+        case 1: // 右から
+          startX = Math.tan(fov / 2) * aspect * distance;
+          startY = (Math.random() - 0.5) * height / distance;
+          endX = -Math.tan(fov / 2) * aspect * distance;
+          endY = (Math.random() - 0.5) * height / distance;
+          break;
+        case 2: // 下から
+          startX = (Math.random() - 0.5) * width / distance;
+          startY = -Math.tan(fov / 2) * distance;
+          endX = (Math.random() - 0.5) * width / distance;
+          endY = Math.tan(fov / 2) * distance;
+          break;
+        case 3: // 左から
+          startX = -Math.tan(fov / 2) * aspect * distance;
+          startY = (Math.random() - 0.5) * height / distance;
+          endX = Math.tan(fov / 2) * aspect * distance;
+          endY = (Math.random() - 0.5) * height / distance;
+          break;
+      }
+      
+      // 流れ星の軌道を計算（Z座標は一定）
+      const startZ = -distance;
+      const endZ = -distance;
+      
+      const start = new THREE.Vector3(startX, startY, startZ);
+      const end = new THREE.Vector3(endX, endY, endZ);
+      
+      // 流れ星の尾のポイントを生成
+      const points = [];
+      const tailLength = 20; // 尾の長さ（ポイント数）
+      for (let i = 0; i <= tailLength; i++) {
+        const t = i / tailLength;
+        const point = start.clone().lerp(end, t);
+        points.push(point);
+      }
+      
+      // 線のジオメトリを作成
+      const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      const material = new THREE.LineBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.8,
+        linewidth: 2
+      });
+      
+      const line = new THREE.Line(geometry, material);
+      
+      // 流れ星のデータを保存
+      line.userData = {
+        start: start,
+        end: end,
+        progress: 0,
+        speed: 0.02 + Math.random() * 0.02, // ランダムな速度
+        life: 0,
+        maxLife: 2000 + Math.random() * 1000 // 2-3秒
+      };
+      
+      scene.add(line);
+      shootingStars.push(line);
+    }
+    
+    // 流れ星を更新
+    function updateShootingStars() {
+      const now = Date.now();
+      
+      // 非定期的に新しい流れ星を生成（3-8秒間隔）
+      if (now - lastShootingStarTime > 3000 + Math.random() * 5000) {
+        createShootingStar();
+        lastShootingStarTime = now;
+      }
+      
+      // 既存の流れ星を更新
+      for (let i = shootingStars.length - 1; i >= 0; i--) {
+        const star = shootingStars[i];
+        const data = star.userData;
+        
+        data.life += 16; // 約60fpsを想定
+        data.progress += data.speed;
+        
+        // 流れ星の位置を更新
+        const currentPos = data.start.clone().lerp(data.end, data.progress);
+        const tailLength = 20;
+        const points = [];
+        
+        for (let j = 0; j <= tailLength; j++) {
+          const t = Math.max(0, data.progress - (j / tailLength) * 0.3);
+          const point = data.start.clone().lerp(data.end, t);
+          points.push(point);
+        }
+        
+        // ジオメトリを更新
+        star.geometry.setFromPoints(points);
+        
+        // 透明度を徐々に下げる
+        const opacity = Math.max(0, 0.8 * (1 - data.life / data.maxLife));
+        star.material.opacity = opacity;
+        
+        // 寿命が尽きたら削除
+        if (data.life >= data.maxLife || data.progress >= 1) {
+          scene.remove(star);
+          star.geometry.dispose();
+          star.material.dispose();
+          shootingStars.splice(i, 1);
+        }
+      }
+    }
+    
     // 背景の星（装飾用）
     function createBackgroundStars() {
       const backgroundStars = new THREE.Group();
@@ -398,12 +574,19 @@
       labelContainer.style.pointerEvents = 'none';
       document.getElementById('canvas-container').appendChild(labelContainer);
       
+      // 星のラベル要素を作成
       labelElements = stars.map(() => {
         const label = document.createElement('div');
         label.className = 'star-label';
         labelContainer.appendChild(label);
         return label;
       });
+      
+      // 太陽のラベル要素も作成
+      const sunLabel = document.createElement('div');
+      sunLabel.className = 'star-label';
+      labelContainer.appendChild(sunLabel);
+      window.sunLabel = sunLabel; // グローバルに保存
     }
     
     // 初期化関数
@@ -414,6 +597,9 @@
       
       // 設定を適用
       applyConfig();
+      
+      // 太陽を作成（ワールド座標の中心）
+      const sun = createSun();
       
       // 星を作成
       createStars();
@@ -437,6 +623,165 @@
       
       // アニメーションを開始
       startAnimation();
+      
+      // 戻りアニメーションをチェック
+      checkReturnAnimation();
+    }
+    
+    // 戻りアニメーションをチェック
+    function checkReturnAnimation() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isReturn = urlParams.get('return') === 'true';
+      
+      if (isReturn) {
+        // 戻りアニメーションを実行
+        animateCameraReturn();
+      }
+    }
+    
+    // カメラを初期位置に戻すアニメーション
+    function animateCameraReturn() {
+      if (isAnimating) return;
+      
+      // URLパラメータから背景色を取得
+      const urlParams = new URLSearchParams(window.location.search);
+      const bgColorParam = urlParams.get('bg');
+      let returnBgColor = new THREE.Color(0x000000);
+      
+      if (bgColorParam) {
+        try {
+          const colorValue = parseInt(bgColorParam, 16);
+          returnBgColor = new THREE.Color(colorValue);
+        } catch (e) {
+          console.error('Invalid bg color parameter:', bgColorParam);
+        }
+      }
+      
+      // 背景色を設定（アニメーション開始時の色）
+      scene.background.copy(returnBgColor);
+      
+      // どの星から戻ってきたかを特定（URLから推測、または最初に見つかった星を使用）
+      let returnStar = null;
+      const fromParam = urlParams.get('from');
+      
+      if (fromParam) {
+        // 太陽の場合は特別に処理
+        if (fromParam === 'sun.html' || fromParam.includes('sun')) {
+          returnStar = scene.children.find(child => child.userData && child.userData.isSun);
+        } else {
+          // fromパラメータから星を特定
+          returnStar = stars.find(star => {
+            const starUrl = star.userData?.url || '';
+            return starUrl.includes(fromParam) || star.userData?.name === fromParam;
+          });
+        }
+      }
+      
+      // 星が見つからない場合は、背景色に最も近い星を探す
+      if (!returnStar && bgColorParam) {
+        const targetColor = new THREE.Color(parseInt(bgColorParam, 16));
+        let closestStar = null;
+        let minColorDiff = Infinity;
+        
+        // 通常の星を検索
+        stars.forEach(star => {
+          const starColor = star.material?.color || new THREE.Color(0xffffff);
+          const colorDiff = starColor.distanceTo(targetColor);
+          if (colorDiff < minColorDiff) {
+            minColorDiff = colorDiff;
+            closestStar = star;
+          }
+        });
+        
+        // 太陽も検索対象に含める
+        const sun = scene.children.find(child => child.userData && child.userData.isSun);
+        if (sun && sun.material) {
+          const sunColor = sun.material.color || new THREE.Color(0xffd700);
+          const sunColorDiff = sunColor.distanceTo(targetColor);
+          if (sunColorDiff < minColorDiff) {
+            minColorDiff = sunColorDiff;
+            closestStar = sun;
+          }
+        }
+        
+        returnStar = closestStar;
+      }
+      
+      // 星が見つからない場合は、太陽を使用
+      if (!returnStar) {
+        returnStar = scene.children.find(child => child.userData && child.userData.isSun);
+      }
+      
+      // 少し待ってからアニメーションを開始（ページ読み込み完了を待つ）
+      setTimeout(() => {
+        if (isAnimating) return;
+        
+        isAnimating = true;
+        animationStartTime = Date.now();
+        
+        // OrbitControlsを無効化
+        controls.enabled = false;
+        
+        // 星のワールド座標を取得
+        let starWorldPosition = new THREE.Vector3(0, 0, 0);
+        if (returnStar) {
+          returnStar.getWorldPosition(starWorldPosition);
+        }
+        
+        // カメラを一旦星の方向に移動（アニメーション開始位置）
+        const cameraDistance = starConfig?.animation?.cameraDistance || 5;
+        const direction = starWorldPosition.clone().sub(camera.position).normalize();
+        const startPosition = starWorldPosition.clone().sub(direction.multiplyScalar(cameraDistance));
+        const startTarget = starWorldPosition.clone();
+        
+        // カメラを開始位置に設定
+        camera.position.copy(startPosition);
+        controls.target.copy(startTarget);
+        camera.lookAt(controls.target);
+        
+        // 初期位置と目標位置
+        const initialZ = starConfig?.camera?.initialZ || 50;
+        const targetPosition = new THREE.Vector3(0, 0, initialZ);
+        const targetLookAt = new THREE.Vector3(0, 0, 0);
+        
+        // 現在の背景色と初期背景色
+        const startBgColor = scene.background.clone();
+        const targetBgColor = new THREE.Color(0x000000);
+        
+        // アニメーション関数
+        window.cameraAnimation = function() {
+          const duration = starConfig?.animation?.duration || animationDuration;
+          const elapsed = Date.now() - animationStartTime;
+          const progress = Math.min(elapsed / duration, 1);
+          
+          // イージング関数（ease-in-out）
+          const easeProgress = progress < 0.5
+            ? 2 * progress * progress
+            : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+          
+          // カメラ位置を補間
+          camera.position.lerpVectors(startPosition, targetPosition, easeProgress);
+          controls.target.lerpVectors(startTarget, targetLookAt, easeProgress);
+          camera.lookAt(controls.target);
+          
+          // 背景色を徐々に黒色に戻す
+          scene.background.lerpColors(startBgColor, targetBgColor, easeProgress);
+          
+          if (progress >= 1) {
+            // アニメーション完了
+            isAnimating = false;
+            window.cameraAnimation = null;
+            controls.enabled = true;
+            
+            // URLパラメータをクリーンアップ
+            const url = new URL(window.location.href);
+            url.searchParams.delete('return');
+            url.searchParams.delete('bg');
+            url.searchParams.delete('from');
+            window.history.replaceState({}, '', url);
+          }
+        };
+      }, 100); // 100ms待ってからアニメーション開始
     }
     
     // 初期化を実行
@@ -452,7 +797,10 @@
       mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       
       raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(stars);
+      // 太陽も含めて検出対象にする
+      const sun = scene.children.find(child => child.userData && child.userData.isSun);
+      const objectsToCheck = sun ? [...stars, sun] : stars;
+      const intersects = raycaster.intersectObjects(objectsToCheck);
       
       // カーソルスタイルの変更
       if (intersects.length > 0) {
@@ -513,6 +861,30 @@
           label.classList.remove('visible');
         }
       });
+      
+      // 太陽のラベルも更新
+      if (window.sunLabel) {
+        const sun = scene.children.find(child => child.userData && child.userData.isSun);
+        if (sun) {
+          const worldPosition = new THREE.Vector3();
+          sun.getWorldPosition(worldPosition);
+          const vector = worldPosition.clone();
+          vector.project(camera);
+          
+          const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+          const y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+          
+          window.sunLabel.style.left = x + 'px';
+          window.sunLabel.style.top = y + 'px';
+          window.sunLabel.textContent = sun.userData.name;
+          
+          if (vector.z < 1 && hoveredStar === sun) {
+            window.sunLabel.classList.add('visible');
+          } else {
+            window.sunLabel.classList.remove('visible');
+          }
+        }
+      }
     }
     
     // カメラアニメーション用の変数
@@ -753,6 +1125,17 @@
         
         const time = Date.now() * 0.001;
         
+        // 太陽を回転させる（ゆっくりと）
+        const sun = scene.children.find(child => child.userData && child.userData.isSun);
+        if (sun) {
+          sun.rotation.y += 0.0005;
+          sun.rotation.x += 0.0003;
+          
+          // 太陽のサイズを脈動させる
+          const sunScale = 1 + Math.sin(time * 1.5) * 0.05;
+          sun.scale.set(sunScale, sunScale, sunScale);
+        }
+        
         // 惑星と通常の星を漂わせる（衛星は除外）
         stars.forEach((star, index) => {
           // 衛星は軌道計算で位置が決まるのでスキップ
@@ -827,6 +1210,7 @@
       
       controls.update();
       updateLabels();
+      updateShootingStars(); // 流れ星を更新
       renderer.render(scene, camera);
     }
     

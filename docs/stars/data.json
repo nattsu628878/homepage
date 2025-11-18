@@ -41,7 +41,7 @@
     "parentId": "links",
     "orbitRadius": 12,
     "orbitSpeed": 0.5,
-    "orbitAngle": 2.094
+    "orbitAngle": 1.571
   },
   {
     "id": "twitter",
@@ -54,7 +54,20 @@
     "parentId": "links",
     "orbitRadius": 12,
     "orbitSpeed": 0.5,
-    "orbitAngle": 4.189
+    "orbitAngle": 3.142
+  },
+  {
+    "id": "instagram",
+    "name": "Instagram",
+    "url": "./instagram.html",
+    "position": [0, 0, 0],
+    "color": "0xe4405f",
+    "type": "satellite",
+    "description": "写真とか",
+    "parentId": "links",
+    "orbitRadius": 12,
+    "orbitSpeed": 0.5,
+    "orbitAngle": 4.712
   },
   {
     "id": "test1",
